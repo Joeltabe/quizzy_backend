@@ -1,11 +1,17 @@
-const connectDB = require('./db'); 
-const registerUser = require('./auth').registerUser;
-const loginUser = require('./auth').loginUser;
+const express = require('express');
+const connectDB = require('./db');
+const registerRouter = require('./routes/register');
+const port = process.env.PORT || 5070; 
+const app = express();
 
-// Example usage
-registerUser('new_student', 'secure_password');
-loginUser('existing_user', 'correct_password').then((user) => {
-  console.log("Logged in user:", user);
-}).catch((err) => {
-  console.error("Login error:", err.message);
+// Connect to MongoDB
+connectDB();
+
+// Mount register route
+app.use('/api/register', registerRouter);
+
+// ... (other routes and server configuration)
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });

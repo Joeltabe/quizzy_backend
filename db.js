@@ -1,25 +1,16 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+dotenv.config();
 
-dotenv.config({ path: './config.env'});
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('MongoDB connected successfully!');
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err.message);
+    process.exit(1); // Exit on connection failure
+  }
+};
 
-
-const DB = `mongodb+srv://chunke135:9lJvdebg5WPs0F4f@cluster0.mbjrcw6.mongodb.net/Quizzy`;
-
-
-mongoose.connect(DB ,
-    {
-    useNewurlParser: true,
-
-}
-).then(con => {
-   
-    console.log(`DB connection succesful`);
-}).catch((err) => {
-console.log('failed connection to the databse', err.message)
-});
-
-
-mongoose.set('debug', true);
-
+module.exports = connectDB;
