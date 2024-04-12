@@ -1,0 +1,49 @@
+const fs = require('fs');
+const { MongoClient } = require('mongodb');
+
+// Function to convert PDF to binary format
+function convertToBinary(filePath) {
+  try {
+    const binaryData = fs.readFileSync(filePath);
+    return binaryData;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to convert PDF to binary format');
+  }
+}
+
+// Function to save PDF in MongoDB Atlas as a link
+async function savePdfToMongoDB(binaryData) {
+  try {
+    // Connect to MongoDB Atlas
+    const client = new MongoClient(`mongodb+srv://chunke135:9lJvdebg5WPs0F4f@cluster0.mbjrcw6.mongodb.net/`, { useUnifiedTopology: true });
+    await client.connect();
+    const db = client.db('Quizzy');
+    const pdfCollection = db.collection('pdfs');
+
+    // Save binary PDF in MongoDB
+    const result = await pdfCollection.insertOne({ pdf: binaryData });
+
+    // Generate and return the link to the frontend
+    const link = `https://example.com/pdf/${result.insertedId}`;
+    return link;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to save PDF in MongoDB');
+  }
+}
+
+// Example usage
+const pdfFilePath = 'C:\Users\BLESSING\Documents\attachment.pdf';
+
+// Convert PDF to binary format
+const binaryData = convertToBinary(pdfFilePath);
+
+// Save PDF in MongoDB and get the link
+savePdfToMongoDB(binaryData)
+  .then(link => {
+    console.log('PDF saved in MongoDB with link:', link);
+  })
+  .catch(error => {
+    console.error(error);
+  });
